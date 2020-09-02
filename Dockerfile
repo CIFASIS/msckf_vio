@@ -13,6 +13,6 @@ COPY ./ $CATKIN_WS/src/msckf_vio/
 
 WORKDIR $CATKIN_WS
 
-RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; catkin_make' && \
+RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; catkin_make --pkg msckf_vio --cmake-args -DCMAKE_BUILD_TYPE=Release' && \
     sed -i '/exec "$@"/i \
            source "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
