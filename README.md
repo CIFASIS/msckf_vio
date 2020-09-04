@@ -20,6 +20,22 @@ Most of the dependencies are standard including `Eigen`, `OpenCV`, and `Boost`. 
 sudo apt-get install libsuitesparse-dev
 ```
 
+## Docker support
+1. Clone the repository.
+1. Build image:
+   ```
+   make image
+   ```
+1. Open shell in a docker container:
+   ```
+   make shell
+   ```
+1. Write your own launch file and run `msckf_vio`. For example:
+   ```
+   roslaunch msckf_vio msckf_vio_rosario.launch
+   ```
+1. Open another terminal and run `rosbag play <BAG_FILE>` in the host. Finally, `rviz` can be executed in the host too.
+
 ## Compling
 The software is a standard catkin package. Make sure the package is on `ROS_PACKAGE_PATH` after cloning the package to your workspace. And the normal procedure for compiling a catkin package should work.
 
