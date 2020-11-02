@@ -1,18 +1,17 @@
 FROM ros:kinetic-perception
 
-ENV CATKIN_WS=/root/catkin_ws
-
 RUN apt-get update && apt-get install -y \
       libsuitesparse-dev \
       ros-kinetic-tf-conversions \
       ros-kinetic-random-numbers && \
     rm -rf /var/lib/apt/lists/*
 
+# if you want to reference a previously defined env variable in another definition, use multiple ENV
+ENV CATKIN_WS=/root/catkin_ws MSCKF_ROOT=/root/catkin_ws/src/msckf_vio/
 
-COPY ./ $CATKIN_WS/src/msckf_vio/
+COPY ./ $MSCKF_ROOT
 
 WORKDIR $CATKIN_WS
 
-RUN /bin/bash -c '. /opt/ros/kinetic/setup.bash; catkin_make --pkg msckf_vio --cmake-args -DCMAKE_BUILD_TYPE=Release' && \
-    sed -i '/exec "$@"/i \
-           source "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
+COPY ./scripts/ $CATKIN_WS
+RUN ["/bin/bash", "-c", "chmod +x build.sh && ./build.sh && chmod +x modify_entrypoint.sh && ./modify_entrypoint.sh"]
