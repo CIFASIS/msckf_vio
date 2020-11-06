@@ -11,5 +11,5 @@ OUTPUT_DIR=$(pwd)/rosario_${dt}
 mkdir $OUTPUT_DIR
 
 for i in `seq 1 6`; do
-  ./run_rosario_sequence.sh -r -o $OUTPUT_DIR/trajectory_rosario_0$i.txt $DATASET_DIR/sequence0$i.orig.bag
+  ./run_rosario_sequence.sh -r -o $OUTPUT_DIR/trajectory_rosario_0$i.txt $DATASET_DIR/sequence0$i.bag
 done
