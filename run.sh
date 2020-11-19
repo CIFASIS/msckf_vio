@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Perform several S-MSCKF operations in a Docker container.
-# 1- Build docker image (compilation)
-# 2- Run method in a docker container (dev mode)
-# 3- Run method in a docker container (vis mode)
+# Perform several S-MSCKF operations in a Docker container:
+#   1-Build docker image (compilation)
+#   2-Run method in a docker container (dev mode)
+#   3-Run method in a docker container (vis mode)
 
 DEV_MODE=0
 VIS_MODE=0
@@ -12,13 +12,16 @@ DETACHED=0
 MUTUALLY_EXCLUSIVE_OPTS=0
 LAUNCH_FILE=msckf_vio_rosario.launch
 
+# Get full directory name of the script no matter where it is being called from
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 function echoUsage()
 {
-    echo -e "Usage: ./run_msckf.sh   -d | -v [detached] [-l LAUNCHFILE] | -b [-h]  \n\
+    echo -e "Usage: ./run.sh   -d | -v [detached] [-l LAUNCHFILE] | -b [-h]  \n\
                   \t -d dev mode \n\
-                  \t -v vis mode. \n\
+                  \t -v vis mode \n\
                   \t\t 'detached' to run in background \n\
-                  \t\t -l <NAME_OF_LAUNCHFILE> to run an specific launch file. \n\
+                  \t\t -l <NAME_OF_LAUNCHFILE> to run a specific launch file. \n\
                   \t\t\t It must be placed in launch/ \n\
                   \t -b build image \n\
                   \t -h help" >&2
@@ -79,25 +82,25 @@ if [ -z "$SOME_OPT" ]; then
 fi
 
 if [ $DEV_MODE -eq 1 ] ; then
-  docker run -it --net=host -v $(pwd):/root/catkin_ws/src/msckf_vio/ msckf-vio:ros-kinetic
+  docker run --rm -it --net=host -v $CURRENT_DIR:/root/catkin_ws/src/msckf_vio/ msckf-vio:ros-kinetic
 fi
 
 if [ $VIS_MODE -eq 1 ] ; then
   if [ $DETACHED -eq 1 ] ; then
     docker run -d --net=host \
-       -v $(pwd)/config/:/root/catkin_ws/src/msckf_vio/config/ \
-       -v $(pwd)/launch/:/root/catkin_ws/src/msckf_vio/launch/ \
+       -v $CURRENT_DIR/config/:/root/catkin_ws/src/msckf_vio/config/ \
+       -v $CURRENT_DIR/launch/:/root/catkin_ws/src/msckf_vio/launch/ \
        msckf-vio:ros-kinetic \
        roslaunch msckf_vio $LAUNCH_FILE
   else
     docker run --net=host \
-       -v $(pwd)/config/:/root/catkin_ws/src/msckf_vio/config/ \
-       -v $(pwd)/launch/:/root/catkin_ws/src/msckf_vio/launch/ \
+       -v $CURRENT_DIR/config/:/root/catkin_ws/src/msckf_vio/config/ \
+       -v $CURRENT_DIR/launch/:/root/catkin_ws/src/msckf_vio/launch/ \
        msckf-vio:ros-kinetic \
        roslaunch msckf_vio $LAUNCH_FILE
   fi
 fi
 
 if [ $BUILD -eq 1 ] ; then
-  docker build -t "msckf-vio:ros-kinetic" .
+  docker build --rm -t "msckf-vio:ros-kinetic" $CURRENT_DIR
 fi
