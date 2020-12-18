@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(msckf_vio)
 
+option(SAVE_TIMES "Enable option to save tracking times" OFF)
+if(SAVE_TIMES)
+  message(STATUS "Building with SAVE_TIMES")
+  add_definitions(-DSAVE_TIMES)
+endif()
+
 add_compile_options(-std=c++11)
 
 # Modify cmake module path if new .cmake files are required

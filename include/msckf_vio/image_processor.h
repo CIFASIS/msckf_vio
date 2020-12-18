@@ -14,6 +14,10 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/video.hpp>
 
+#ifdef SAVE_TIMES
+#include <fstream>
+#endif
+
 #include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
 #include <image_transport/image_transport.h>
@@ -388,6 +392,11 @@ private:
   std::map<FeatureIDType, int> feature_lifetime;
   void updateFeatureLifetime();
   void featureLifetimeStatistics();
+#ifdef SAVE_TIMES
+  std::ofstream f_track_times_;
+  int num_tracked_frames_;
+#endif
+
 };
 
 typedef ImageProcessor::Ptr ImageProcessorPtr;

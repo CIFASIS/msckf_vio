@@ -11,6 +11,10 @@
 #include <iterator>
 #include <algorithm>
 
+#ifdef SAVE_TIMES
+#include <chrono>
+#endif
+
 #include <Eigen/SVD>
 #include <Eigen/QR>
 #include <Eigen/SparseCore>
@@ -54,6 +58,19 @@ MsckfVio::MsckfVio(ros::NodeHandle& pnh):
   is_gravity_set(false),
   is_first_img(true),
   nh(pnh) {
+#ifdef SAVE_TIMES
+  f_track_times_.open("tracking_times_end.txt");
+  f_track_times_ << std::fixed;
+  f_track_times_ << std::setprecision(6);
+  num_tracked_frames_ = 0;
+#endif
+  return;
+}
+
+MsckfVio::~MsckfVio() {
+#ifdef SAVE_TIMES
+  f_track_times_.close();
+#endif
   return;
 }
 
@@ -405,6 +422,12 @@ void MsckfVio::featureCallback(
   pruneCamStateBuffer();
   double prune_cam_states_time = (
       ros::Time::now()-start_time).toSec();
+
+#ifdef SAVE_TIMES
+  num_tracked_frames_++;
+  auto const t = std::chrono::system_clock::now().time_since_epoch().count();
+  f_track_times_ << num_tracked_frames_ << " " << t / 1e09 << std::endl;
+#endif
 
   // Publish the odometry.
   start_time = ros::Time::now();

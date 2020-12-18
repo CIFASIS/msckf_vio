@@ -10,6 +10,10 @@
 #include <set>
 #include <Eigen/Dense>
 
+#ifdef SAVE_TIMES
+#include <chrono>
+#endif
+
 #include <sensor_msgs/image_encodings.h>
 #include <random_numbers/random_numbers.h>
 
@@ -30,11 +34,20 @@ ImageProcessor::ImageProcessor(ros::NodeHandle& n) :
   stereo_sub(10),
   prev_features_ptr(new GridFeatures()),
   curr_features_ptr(new GridFeatures()) {
+#ifdef SAVE_TIMES
+  f_track_times_.open("tracking_times_start.txt");
+  f_track_times_ << std::fixed;
+  f_track_times_ << std::setprecision(6);
+  num_tracked_frames_ = 0;
+#endif
   return;
 }
 
 ImageProcessor::~ImageProcessor() {
   destroyAllWindows();
+#ifdef SAVE_TIMES
+  f_track_times_.close();
+#endif
   //ROS_INFO("Feature lifetime statistics:");
   //featureLifetimeStatistics();
   return;
@@ -211,7 +224,11 @@ void ImageProcessor::stereoCallback(
     const sensor_msgs::ImageConstPtr& cam1_img) {
 
   //cout << "==================================" << endl;
-
+#ifdef SAVE_TIMES
+  num_tracked_frames_++;
+  auto const t = std::chrono::system_clock::now().time_since_epoch().count();
+  f_track_times_ << num_tracked_frames_ << " " << t / 1e09 << std::endl;
+#endif
   // Get the current image.
   cam0_curr_img_ptr = cv_bridge::toCvShare(cam0_img,
       sensor_msgs::image_encodings::MONO8);

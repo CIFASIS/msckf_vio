@@ -16,6 +16,10 @@
 #include <Eigen/Geometry>
 #include <boost/shared_ptr.hpp>
 
+#ifdef SAVE_TIMES
+#include <fstream>
+#endif
+
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <nav_msgs/Odometry.h>
@@ -46,7 +50,7 @@ class MsckfVio {
     MsckfVio operator=(const MsckfVio&) = delete;
 
     // Destructor
-    ~MsckfVio() {}
+    ~MsckfVio();
 
     /*
      * @brief initialize Initialize the VIO.
@@ -232,6 +236,11 @@ class MsckfVio {
     ros::Publisher mocap_odom_pub;
     geometry_msgs::TransformStamped raw_mocap_odom_msg;
     Eigen::Isometry3d mocap_initial_frame;
+
+#ifdef SAVE_TIMES
+    std::ofstream f_track_times_;
+    int num_tracked_frames_;
+#endif
 };
 
 typedef MsckfVio::Ptr MsckfVioPtr;
