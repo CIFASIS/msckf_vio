@@ -2,8 +2,8 @@ FROM ros:kinetic-perception
 
 RUN apt-get update && apt-get install -y \
       libsuitesparse-dev \
-      ros-kinetic-tf-conversions \
-      ros-kinetic-random-numbers && \
+      ros-${ROS_DISTRO}-tf-conversions \
+      ros-${ROS_DISTRO}-random-numbers && \
     rm -rf /var/lib/apt/lists/*
 
 # if you want to reference a previously defined env variable in another definition, use multiple ENV
